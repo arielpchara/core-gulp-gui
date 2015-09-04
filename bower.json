@@ -1,0 +1,15 @@
+{
+  "name": "widget_builder",
+  "version": "0.0.0",
+  "authors": [
+    "arielpchara <ariel@pchara.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

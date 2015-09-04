@@ -1,0 +1,13 @@
+{
+  "name": "widget_builder",
+  "private": true,
+  "version": "0.1.0",
+  "main": "app://app/index.html",
+  "window": {
+    "icon": "./icon.png",
+    "toolbar": true
+  },
+  "dependencies": {
+    "angular": "^1.4.4"
+  }
+}

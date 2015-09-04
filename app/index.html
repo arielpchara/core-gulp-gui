@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/css/bootstrap.css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="/css/bootstrap-theme.css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="/css/main.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script src="/js/nw.js" charset="utf-8"></script>
+  <title>Gulp for widgets</title>
+</head>
+<body>
+
+  <div class="container-fluid" ng-controller="DirController">
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group">
+            <label for="widgetPath" class="btn btn-default btn-block">Caminho para widgets {{directory}}</label>
+            <input type="file" id="widgetPath" class="hide" ng-model="directory" webkitdirectory>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group">
+            <input type="text" ng-model="directory" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+          <div class="col-md-12">
+            <ul class="list-group">
+              <li class="list-group-item" ng-repeat="w in widgets">
+                <label>
+                <strong>{{w.title}}</strong>
+                <p>{{w.description}}</p>
+                <input type="checkbox" name="name" value="{{w.tagName}}">
+                </label>
+              </li>
+            </ul>
+          </div>
+      </div>
+
+  </div>
+  <script src="/js/main.bundle.js" charset="utf-8"></script>
+</body>
+</html>
