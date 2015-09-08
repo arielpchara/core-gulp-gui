@@ -1,0 +1,5 @@
+{% for templateName in ngTemplates %}
+<script type="text/ng-template" id="{{{templateName}}}" >
+    {% include 'ng-templates/'+templateName %}
+</script>
+{% endfor %}

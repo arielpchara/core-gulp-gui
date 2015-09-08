@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" ng-app='app'>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="./css/bootstrap-theme.css">
+    <title></title>
+</head>
+<body>
+
+    {% block header %}
+    {%include 'components/tabs.html' %}
+    {% endblock %}
+
+    {% block content %}
+
+    {% endblock %}
+
+    {% include 'components/templates.html' %}
+
+    <script src="./js/main.bundle.js" charset="utf-8"></script>
+</body>
+</html>

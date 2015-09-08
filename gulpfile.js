@@ -6,85 +6,97 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
+var fs = require('fs');
+var path = require('path');
 var sourcemaps = require('gulp-sourcemaps');
 var browserify = require('gulp-browserify');
-var async = require('async');
+var nunjucks = require('gulp-nunjucks-html');
+var data = require('gulp-data');
+var frontMatter = require('gulp-front-matter');
 var browserSync = require('browser-sync').create();
 
 
-gulp.task('nw', function () {
+gulp.task('nw', ["default"], function() {
     var nw = new NwBuilder({
         files: './app/**/**',
         platforms: ['win64'],
-        version:'0.12.3',
+        version: '0.12.3',
         winIco: './app/icon.ico'
     });
     // Log stuff you want
-    nw.on('log', function (msg) {
+    nw.on('log', function(msg) {
         gutil.log('nw-builder', msg);
     });
     // Build returns a promise, return it so the task isn't called in parallel
-    return nw.build().catch(function (err) {
+    return nw.build().catch(function(err) {
         gutil.log('nw-builder', err);
     });
 });
 
-gulp.task('sass',function () {
-  return gulp.src(['./src/app/scss/*.scss'])
-    .pipe( sass() )
-    .on('error',gutil.log)
-    .pipe( gulp.dest('./app/css/'));
+gulp.task('sass', function() {
+    return gulp.src(['./src/app/scss/*.scss'])
+        .pipe(sass())
+        .on('error', gutil.log)
+        .pipe(gulp.dest('./app/css/'));
 });
 
-var jsDest = {dir:"./app/js/",filename:"main.js"};
-
-// gulp.task("js-concat",function () {
-//   return gulp.src(['./src/app/js/main.js','./src/app/js/**/*.js','!./src/app/js/vendor/**/*.js'])
-//     .pipe( concat(jsDest.filename) )
-//     .on('error',gutil.log)
-//     .pipe( gulp.dest(jsDest.dir));
-// });
+var jsDest = {
+    dir: "./app/js/",
+    filename: "main.js"
+};
 
 gulp.task("js", function() {
-    // Single entry point to browserify
     gulp.src(['./src/app/js/main.js'])
-      .pipe( sourcemaps.init() )
-      .pipe( browserify({
-        insertGlobals : true
-      }))
-      .pipe( rename({
-        suffix:".bundle"
-      }))
-      // .pipe( uglify() )
-      .on('error',gutil.log)
-      .pipe( sourcemaps.write() )
-      .pipe(gulp.dest( jsDest.dir ));
+        .pipe(sourcemaps.init())
+        .pipe(browserify({
+            insertGlobals: true
+        }))
+        .pipe(rename({
+            suffix: ".bundle"
+        }))
+        // .pipe( uglify() )
+        .on('error', gutil.log)
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest(jsDest.dir));
 });
 
-// gulp.task('js',["browserify"],function () {
-//   return gulp.src(['./app/js/main.bundle.js'])
-//     .pipe( sourcemaps.init() )
-//     .pipe( rename({
-//       suffix:".min"
-//     }) )
-//     .pipe( uglify() )
-//     .on('error',gutil.log)
-//     .pipe( sourcemaps.write() )
-//     .pipe( gulp.dest('./app/js/'));
-// });
+var nunjucksOpts = {
+  searchPaths: ['src/app/templates'],
+  tags: {
+    variableStart: '{{{',
+    variableEnd: '}}}'
+  }
+};
 
-var mainTasks = ['sass','js'];
+gulp.task('nunjucks', function() {
+  return gulp.src('src/app/templates/*.html')
+    .on('error', gutil.log)
+    .pipe(data(function(file) {
+      return {
+          ngTemplates:fs.readdirSync('src/app/templates/ng-templates').map(function (filename) {
+              return filename; // path.join('ng-templates',filename);
+          })
+      };
+    }))
+    .pipe(frontMatter())
+    .pipe(nunjucks(nunjucksOpts).on('error', gutil.log))
+    .pipe(gulp.dest('./app'));
+});
 
-gulp.task('w',mainTasks,function () {
-  gulp.watch(["./src/app/scss/**/*.scss"],["sass"]);
-  gulp.watch(["./src/app/js/**/*.js"],["js"]);
+
+var mainTasks = ['sass', 'js', 'nunjucks'];
+
+gulp.task('watch', mainTasks, function() {
+    gulp.watch(["./src/app/scss/**/*.scss"], ["sass"]);
+    gulp.watch(["./src/app/js/**/*.js"], ["js"]);
+    gulp.watch(["./src/app/templates/**/*.html"], ["nunjucks"]);
 });
 
 gulp.task('browser-sync', function() {
     browserSync.init({
         server: "./app"
     });
-    gulp.watch(["./app/*.html","./app/css/*.css","./app/js/*.js"]).on('change', browserSync.reload);
+    gulp.watch(["./app/*.html", "./app/css/*.css", "./app/js/*.js"]).on('change', browserSync.reload);
 });
 
-gulp.task("default",mainTasks);
+gulp.task("default", mainTasks);

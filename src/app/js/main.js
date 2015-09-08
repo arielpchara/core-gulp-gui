@@ -1,12 +1,16 @@
 var angular = require("angular");
-// var $ = require("jquery");
+
+var ngRoute = require("angular-route");
+
 var path = require('path');
 
-// require("./autocomplete.dir.js");
+var app = angular.module('app',['ngRoute']);
 
-var  app = angular.module('app',[]);
+require("./WidgetsController.js")(app);
+require("./TasksController.js")(app);
+require("./ConfigsController.js")(app);
 
-require("./dir.controller.js")(app);
+require("./routes.js")(app);
 
 
 app.directive('webkitdirectory',function () {

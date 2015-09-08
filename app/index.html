@@ -1,47 +1,59 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="app">
+<html lang="en" ng-app='app'>
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="/css/bootstrap.css" media="screen" title="no title" charset="utf-8">
-  <link rel="stylesheet" href="/css/bootstrap-theme.css" media="screen" title="no title" charset="utf-8">
-  <link rel="stylesheet" href="/css/main.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <script src="/js/nw.js" charset="utf-8"></script>
-  <title>Gulp for widgets</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="./css/bootstrap-theme.css">
+    <title></title>
 </head>
 <body>
 
-  <div class="container-fluid" ng-controller="DirController">
+    
+    <ul class="nav nav-tabs">
+  <li role="presentation" class="active"><a href="#widgets">Widgets</a></li>
+  <li role="presentation"><a href="#tasks">Tasks</a></li>
+  <li role="presentation"><a href="#config">Configs</a></li>
+</ul>
 
-      <div class="row">
-        <div class="col-md-12">
-          <div class="form-group">
-            <label for="widgetPath" class="btn btn-default btn-block">Caminho para widgets {{directory}}</label>
-            <input type="file" id="widgetPath" class="hide" ng-model="directory" webkitdirectory>
-          </div>
-        </div>
-        <div class="col-md-12">
-          <div class="form-group">
-            <input type="text" ng-model="directory" class="form-control">
-          </div>
-        </div>
-      </div>
+    
 
-      <div class="row">
-          <div class="col-md-12">
-            <ul class="list-group">
-              <li class="list-group-item" ng-repeat="w in widgets">
-                <label>
-                <strong>{{w.title}}</strong>
-                <p>{{w.description}}</p>
-                <input type="checkbox" name="name" value="{{w.tagName}}">
-                </label>
-              </li>
-            </ul>
-          </div>
-      </div>
+    
 
-  </div>
-  <script src="/js/main.bundle.js" charset="utf-8"></script>
+<ng-view></ng-view>
+
+
+
+    
+<script type="text/ng-template" id="configs.html" >
+    <h2>Configuração</h2>
+<div class="form-inline">
+    <div class="form-group">
+        <label for="widgetsPath">Pasta</label>
+        <input type="text" id="widgetsPath">
+    </div>
+    <button>Procurar</button>
+</div>
+<div class="form-inline">
+    <div class="form-group">
+        <label for="widgetsPath">Custom tasks</label>
+        <input type="text" id="widgetsPath" placeholder="gulpfile.js">
+    </div>
+</div>
+
+</script>
+
+<script type="text/ng-template" id="tasks.html" >
+    <h2>Tarefas</h2>
+
+</script>
+
+<script type="text/ng-template" id="widgets.html" >
+    <h2>Widgets</h2>
+
+</script>
+
+
+
+    <script src="./js/main.bundle.js" charset="utf-8"></script>
 </body>
 </html>

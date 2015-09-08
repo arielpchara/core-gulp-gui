@@ -1,21 +1,25 @@
 {
-    "name": "widget_builder",
-    "private": true,
-    "version": "0.1.0",
-    "scripts": {
-        "start": "gulp w && gulp browser-sync"
-    },
-    "dependencies": {
-        "gulp": "^3.9.0",
-        "gulp-concat": "^2.6.0",
-        "gulp-debug": "^2.1.0",
-        "gulp-rename": "^1.2.2",
-        "gulp-sass": "^2.0.4",
-        "gulp-sourcemaps": "^1.5.2",
-        "gulp-uglify": "^1.2.0",
-        "gulp-util": "^3.0.6",
-        "xml2js": "^0.4.10",
-        "nw-builder": "^2.0.2",
-        "gulp-browserify": "^0.5.1"
-    }
+  "name": "widget_builder",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "start": "gulp w && gulp browser-sync"
+  },
+  "dependencies": {
+    "angular": "^1.4.5",
+    "angular-bootstrap": "^0.12.2",
+    "angular-route": "^1.4.5",
+    "gulp": "^3.9.0",
+    "gulp-browserify": "^0.5.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-data": "^1.2.0",
+    "gulp-debug": "^2.1.0",
+    "gulp-front-matter": "^1.2.3",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.0.4",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-uglify": "^1.2.0",
+    "gulp-util": "^3.0.6",
+    "nw-builder": "^2.0.2"
+  }
 }
