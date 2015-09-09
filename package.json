@@ -9,6 +9,7 @@
     "angular": "^1.4.5",
     "angular-bootstrap": "^0.12.2",
     "angular-route": "^1.4.5",
+    "browserify": "^11.0.1",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.0",
@@ -20,6 +21,10 @@
     "gulp-sourcemaps": "^1.5.2",
     "gulp-uglify": "^1.2.0",
     "gulp-util": "^3.0.6",
-    "nw-builder": "^2.0.2"
+    "nw-builder": "^2.0.2",
+    "nwjs-browserify": "^1.0.4",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "xml2js": "^0.4.12"
   }
 }

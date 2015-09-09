@@ -5,9 +5,14 @@
   "main": "app://app/index.html",
   "window": {
     "icon": "./icon.png",
-    "toolbar": true
+    "toolbar": true,
+    "width": 960,
+    "min_width": 800,
+    "min_height": 500
   },
   "dependencies": {
-    "angular": "^1.4.4"
+    "angular": "^1.4.5",
+    "angular-route": "^1.4.5",
+    "xml2js": "^0.4.12"
   }
 }

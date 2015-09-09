@@ -1,3 +1,4 @@
+
 var NwBuilder = require('nw-builder');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -6,10 +7,18 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
+
 var fs = require('fs');
 var path = require('path');
+
 var sourcemaps = require('gulp-sourcemaps');
-var browserify = require('gulp-browserify');
+
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+
+var browserify = require('browserify');
+var nwjsify = require('nwjs-browserify');
+
 var nunjucks = require('gulp-nunjucks-html');
 var data = require('gulp-data');
 var frontMatter = require('gulp-front-matter');
@@ -46,18 +55,25 @@ var jsDest = {
 };
 
 gulp.task("js", function() {
-    gulp.src(['./src/app/js/main.js'])
+
+    var b = browserify({
+        entries: './src/app/js/main.js',
+        debug: true,
+        transform: [nwjsify]
+      });
+
+    return b.bundle()
+        .pipe(source('bundle.js'))
+        .pipe(buffer())
         .pipe(sourcemaps.init())
-        .pipe(browserify({
-            insertGlobals: true
-        }))
-        .pipe(rename({
-            suffix: ".bundle"
-        }))
         // .pipe( uglify() )
         .on('error', gutil.log)
-        .pipe(sourcemaps.write())
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(jsDest.dir));
+
+    // return gulp.src(['./src/app/js/**/*.js'])
+    //     .on('error', gutil.log)
+    //     .pipe(gulp.dest(jsDest.dir));
 });
 
 var nunjucksOpts = {

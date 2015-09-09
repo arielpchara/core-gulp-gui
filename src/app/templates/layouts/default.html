@@ -4,20 +4,25 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/bootstrap-theme.css">
+    <link rel="stylesheet" href="./css/fa/font-awesome.css">
     <title></title>
 </head>
 <body>
 
+<div class="container">
     {% block header %}
-    {%include 'components/tabs.html' %}
+    {% include 'components/tabs.html' %}
     {% endblock %}
+</div>
 
+<div class="container">
     {% block content %}
 
     {% endblock %}
+</div>
 
     {% include 'components/templates.html' %}
-
-    <script src="./js/main.bundle.js" charset="utf-8"></script>
+    <script src="./js/bundle.js" charset="utf-8"></script>
+    <script src="./js/nwjs.js" charset="utf-8"></script>
 </body>
 </html>

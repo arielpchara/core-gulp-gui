@@ -4,56 +4,98 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/bootstrap-theme.css">
+    <link rel="stylesheet" href="./css/fa/font-awesome.css">
     <title></title>
 </head>
 <body>
 
+<div class="container">
     
-    <ul class="nav nav-tabs">
-  <li role="presentation" class="active"><a href="#widgets">Widgets</a></li>
-  <li role="presentation"><a href="#tasks">Tasks</a></li>
-  <li role="presentation"><a href="#config">Configs</a></li>
-</ul>
+    <div class="navbar navbar-default">
+        <ul class="nav navbar-nav">
+            <li><a href="#widgets">Widgets</a></li>
+            <li><a href="#tasks">Tarefas</a></li>
+            <li><a href="#config">Configurações</a></li>
+        </ul>
+</div>
 
     
+</div>
 
+<div class="container">
     
+<div class="row">
+    <div class="col-xs-12">
+        <ng-view></ng-view>
+    </div>
+</div>
 
-<ng-view></ng-view>
-
-
+</div>
 
     
 <script type="text/ng-template" id="configs.html" >
     <h2>Configuração</h2>
-<div class="form-inline">
-    <div class="form-group">
-        <label for="widgetsPath">Pasta</label>
-        <input type="text" id="widgetsPath">
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <p>Pasta onde estão os widgets em seu projeto</p>
+            <div class="input-group">
+                <input type="text" id="widgetsPath" class="form-control" placeholder="c:/" ng-model="path">
+                <div class="input-group-btn">
+                    <label class="btn btn-default" for="widgetsDirectory">Procurar</label>
+                </div>
+            </div>
+            <input type="file" id="widgetsDirectory" class="hide" value="" webkitdirectory directory>
+        </div>
     </div>
-    <button>Procurar</button>
 </div>
-<div class="form-inline">
-    <div class="form-group">
-        <label for="widgetsPath">Custom tasks</label>
-        <input type="text" id="widgetsPath" placeholder="gulpfile.js">
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <p>Configurar qual nome do arquivo onde estão as tarefas do widget</p>
+            <div class="input-group">
+                <span class="input-group-addon">Tarefas cutomizadas</span>
+                <input type="text" id="widgetsPath" placeholder="gulpfile.js"  class="form-control"  ng-model="gulpfile">
+            </div>
+        </div>
     </div>
 </div>
+
+</script>
+
+<script type="text/ng-template" id="tasks-form.html" >
+    <a type="button" class="btn btn-default navbar-btn" href="#tasks">voltar</a>
 
 </script>
 
 <script type="text/ng-template" id="tasks.html" >
-    <h2>Tarefas</h2>
+    <a class="navbar-brand" href="#">Tarefas</a>
+<a type="button" class="btn btn-default navbar-btn" href="#tasks/new">+</a>
 
 </script>
 
 <script type="text/ng-template" id="widgets.html" >
-    <h2>Widgets</h2>
+    <h2>Widgets <small><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i></a></small></h2>
+<hr>
+<div class="input-group">
+    <input type="text" class="form-control" placeholder="Buscar...">
+    <div class="input-group-btn">
+        <button ng-click="term = ''">Limbar</button>
+    </div>
+</div>
+<ul class="list-group">
+    <li class="list-group-item" ng-repeat="widget in widgets track by $index">
+        <strong>{{widget.title}}</strong>
+        <small>{{widget.description}}</small>
+        <pre><code>{{widget}}</code></pre>
+    </li>
+</ul>
 
 </script>
 
 
-
-    <script src="./js/main.bundle.js" charset="utf-8"></script>
+    <script src="./js/bundle.js" charset="utf-8"></script>
+    <script src="./js/nwjs.js" charset="utf-8"></script>
 </body>
 </html>
