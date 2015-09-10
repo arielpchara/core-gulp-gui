@@ -1,15 +1,25 @@
-<h2>Widgets <small><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i></a></small></h2>
+<h2>Widgets
+    <small><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i></a></small>
+</h2>
 <hr>
-<div class="input-group">
-    <input type="text" class="form-control" placeholder="Buscar...">
-    <div class="input-group-btn">
-        <button ng-click="term = ''">Limbar</button>
+<div class="form-group">
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="Filtrar por ..." ng-model="term">
+        <div class="input-group-btn">
+            <button class="btn btn-default" ng-click="term = ''">Limpar</button>
+        </div>
     </div>
 </div>
-<ul class="list-group">
-    <li class="list-group-item" ng-repeat="widget in widgets track by $index">
-        <strong>{{widget.title}}</strong>
-        <small>{{widget.description}}</small>
-        <pre><code>{{widget}}</code></pre>
-    </li>
-</ul>
+<div class="row">
+    <div class="col-md-12">
+        <ul class="list-group">
+            <li class="list-group-item" ng-repeat="widget in widgets | filter:{title:term} as results track by $index">
+                <strong>{{widget.title}}</strong>
+                <p>{{widget.description}}</p>
+            </li>
+            <li class="list-group-item" ng-if="results.length == 0">
+                <strong>No results found...</strong>
+            </li>
+        </ul>
+    </div>
+</div>

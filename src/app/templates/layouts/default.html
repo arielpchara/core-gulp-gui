@@ -9,13 +9,13 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container-fluid">
     {% block header %}
     {% include 'components/tabs.html' %}
     {% endblock %}
 </div>
 
-<div class="container">
+<div class="container-fluid">
     {% block content %}
 
     {% endblock %}
@@ -24,5 +24,6 @@
     {% include 'components/templates.html' %}
     <script src="./js/bundle.js" charset="utf-8"></script>
     <script src="./js/nwjs.js" charset="utf-8"></script>
+    
 </body>
 </html>
