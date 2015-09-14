@@ -30,9 +30,9 @@ var browserSync = require('browser-sync').create();
 gulp.task('nw', ["default"], function() {
     var nw = new NwBuilder({
         files: './app/**/**',
-        platforms: ['win64'],
+        platforms: ['win64','osx64'],
         version: '0.12.3',
-        winIco: './app/icon.ico'
+        //winIco: './app/icon.ico'
     });
     // Log stuff you want
     nw.on('log', function(msg) {
