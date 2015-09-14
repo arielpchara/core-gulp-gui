@@ -10,7 +10,7 @@
                     <label class="btn btn-default" for="widgetsDirectory">Procurar</label>
                 </div>
             </div>
-            <input type="file" id="widgetsDirectory" class="hide" value="" webkitdirectory directory>
+            <input type="file" class="hide" value="" id="widgetsDirectory" webkitdirectory directory>
         </div>
     </div>
 </div>
@@ -20,8 +20,23 @@
             <p>Configurar qual nome do arquivo onde estão as tarefas do widget</p>
             <div class="input-group">
                 <span class="input-group-addon">Tarefas cutomizadas</span>
-                <input type="text" id="widgetsPath" placeholder="gulpfile.js"  class="form-control"  ng-model="gulpfile">
+                <input type="text" placeholder="gulpfile.js"  class="form-control"  ng-model="gulpfile">
             </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group">
+            <p>Configuração de editor</p>
+            <div class="input-group">
+                <span class="input-group-addon">Local do executavel ou comando</span>
+                <input type="text" placeholder="atom"  class="form-control"  ng-model="editor_exec">
+                <div class="input-group-btn">
+                    <label class="btn btn-default" for="editorExecutable">Procurar</label>
+                </div>
+            </div>
+            <input type="file" class="hide" value="" id="editorExecutable" fileselector>
         </div>
     </div>
 </div>

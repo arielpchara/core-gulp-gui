@@ -8,6 +8,8 @@ var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 
+var exec = require('child_process').exec;
+
 var fs = require('fs');
 var path = require('path');
 
@@ -36,8 +38,11 @@ gulp.task('nw', ["default"], function() {
     nw.on('log', function(msg) {
         gutil.log('nw-builder', msg);
     });
+
     // Build returns a promise, return it so the task isn't called in parallel
-    return nw.build().catch(function(err) {
+    return nw.build().then(function () {
+        
+    }).catch(function(err) {
         gutil.log('nw-builder', err);
     });
 });
@@ -108,7 +113,7 @@ gulp.task('watch', mainTasks, function() {
     gulp.watch(["./src/app/templates/**/*.html"], ["nunjucks"]);
 });
 
-gulp.task('browser-sync', function() {
+gulp.task('browser', function() {
     browserSync.init({
         server: "./app"
     });

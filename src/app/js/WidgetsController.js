@@ -1,6 +1,8 @@
 var fs = _require('fs');
 var path = _require('path');
 var xml = _require('xml2js');
+var child_process = _require('child_process');
+var _ = require('lodash');
 
 module.exports = function(app) {
 
@@ -10,14 +12,14 @@ module.exports = function(app) {
             var deferred = $q.defer();
             var cacheFilename = './cache/widgets.json';
 
-            if (cache) {
-                try {
-                    fs.readFile(cacheFilename, function(err, file) {
-                        deferred.resolve(file);
-                    });
-                    return deferred.promise;
-                } catch (e) {}
-            }
+            // if (cache) {
+            //     try {
+            //         fs.readFile(cacheFilename, function(err, file) {
+            //             deferred.resolve(file);
+            //         });
+            //         return deferred.promise;
+            //     } catch (e) {}
+            // }
 
             try {
                 var parser = new xml.Parser();
@@ -31,7 +33,19 @@ module.exports = function(app) {
                             fs.readFile(manifest, function(err, content) {
                                 parser.parseString(content, function(err, parsed) {
                                     try {
-                                        parseXmlDeferred.resolve(parsed.package.widgets[0].widget[0].$);
+                                        var plain = _.values(parsed.package.widgets[0].widget[0].$).join(' ');
+                                        var widgetProps = angular.extend(parsed.package.widgets[0].widget[0].$,{
+                                            'path': path.join(directory, name),
+                                            'plain': plain,
+                                            'gulpfile': false
+                                        });
+                                        try {
+                                            var gulpfile = path.join(directory, name, 'gulpfile.js');
+                                            if( fs.statSync(gulpfile).isFile() ){
+                                                widgetProps.gulpfile = gulpfile;
+                                            }
+                                        } catch (e) {}
+                                        parseXmlDeferred.resolve( widgetProps );
                                     } catch (e) {
                                         console.error('parametro inconsistente ' + name + '.\n', e);
                                         parseXmlDeferred.resolve(null);
@@ -47,7 +61,7 @@ module.exports = function(app) {
                 $q.all(getManifest)
                     .then(function(manifest) {
                         deferred.resolve(manifest);
-                        fs.writeFile(cacheFilename, manifest);
+                        // fs.writeFile(cacheFilename, manifest);
                     });
             } catch (err) {
                 console.error('não foi possivel ler o diretório\n', err);
@@ -56,7 +70,7 @@ module.exports = function(app) {
         };
     });
 
-    app.controller('WidgetsController', ['$scope', 'WidgetsDir', function($scope, WidgetsDir) {
+    app.controller('WidgetsController', ['$scope', 'WidgetsDir', '$q', function($scope, WidgetsDir, $q) {
 
         $scope.widgets = [];
 
@@ -66,8 +80,26 @@ module.exports = function(app) {
             });
         };
 
+        $scope.open = function (path,cmd) {
+            $q(function (resolve, reject) {
+                if ( cmd !== undefined ) {
+                    reject(null);
+                }else{
+                    child_process.execFile(localStorage.config_editor_exec,[path],{cwd:path},function (err) {
+                        if (err) {
+                            reject(err);
+                        }
+                    });
+                }
+            }).catch(function (err) {
+                cmd = cmd || localStorage.config_editor_exec+" %cd%" || 'start /D %cd% cmd';
+                // cmd = [cmd,path].join(' ');
+                child_process.exec(cmd,{cwd:path},function (err) {
+                    console.error(err);
+                });
+            });
+        };
         $scope.refresh();
-
     }]);
 
     app.config(function($routeProvider, $locationProvider) {

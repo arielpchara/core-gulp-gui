@@ -13,6 +13,7 @@
   "dependencies": {
     "angular": "^1.4.5",
     "angular-route": "^1.4.5",
+    "lodash": "^3.10.1",
     "xml2js": "^0.4.12"
   }
 }

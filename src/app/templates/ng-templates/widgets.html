@@ -13,9 +13,18 @@
 <div class="row">
     <div class="col-md-12">
         <ul class="list-group">
-            <li class="list-group-item" ng-repeat="widget in widgets | filter:{title:term} as results track by $index">
+            <li class="list-group-item" ng-repeat="widget in widgets | filter:{plain:term} as results track by $index">
                 <strong>{{widget.title}}</strong>
                 <p>{{widget.description}}</p>
+                <div>
+                    <div class="btn-group">
+                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-click="open(widget.path)"><i class="fa fa-file-code-o"></i></a>
+                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-click="open(widget.path,'explorer %cd%')"><i class="fa fa-folder-open-o"></i></a>
+                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-click="open(widget.path,'start /D %cd% cmd')"><i class="fa fa-terminal"></i></a>
+                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-if="!!widget.gulpfile" ng-click="open(widget.path,'start /D %cd% gulp')"><i class="fa fa-tasks"></i></a>
+                    </div>
+                    <small>{{widget.path}}</small>
+                </div>
             </li>
             <li class="list-group-item" ng-if="results.length == 0">
                 <strong>No results found...</strong>
