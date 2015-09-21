@@ -1,0 +1,7 @@
+<ol class="breadcrumb">
+  <li><a href="#widgets">Widgets</a></li>
+  <li class="active">{{widget.title|default:'Widget sem nome'}}</li>
+</ol>
+<div ng-repeat="(key,value) in widget | orderBy:key " class="row">
+    <strong class="col-xs-2">{{key}}:</strong><span class="col-xs-10">{{value}}</span>
+</div>

@@ -1,34 +1,38 @@
-<h2>Widgets
-    <small><a href="javascript:void(0)" ng-click="refresh()"><i class="fa fa-refresh"></i></a></small>
-</h2>
-<hr>
+<ol class="breadcrumb">
+  <li class="active">Widgets</li>
+</ol>
+
 <div class="form-group">
     <div class="input-group">
+        <span class="input-group-addon">Widgets - {{results.length}}/{{widgets.length}}</span>
         <input type="text" class="form-control" placeholder="Filtrar por ..." ng-model="term">
         <div class="input-group-btn">
-            <button class="btn btn-default" ng-click="term = ''">Limpar</button>
+            <button class="btn btn-info" ng-click="term = ''">Limpar</button>
+            <button class="btn btn-info" ng-click="refresh(1)"><i class="fa fa-refresh" ng-class="{'loading-icon':loading}"></i></button>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-12">
-        <ul class="list-group">
-            <li class="list-group-item" ng-repeat="widget in widgets | filter:{plain:term} as results track by $index">
-                <strong>{{widget.title}}</strong>
-                <p>{{widget.description}}</p>
-                <div>
-                    <div class="btn-group">
-                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-click="open(widget.path)"><i class="fa fa-file-code-o"></i></a>
-                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-click="open(widget.path,'explorer %cd%')"><i class="fa fa-folder-open-o"></i></a>
-                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-click="open(widget.path,'start /D %cd% cmd')"><i class="fa fa-terminal"></i></a>
-                        <a class="btn btn-sm btn-default" href="javascript:void(0)" ng-if="!!widget.gulpfile" ng-click="open(widget.path,'start /D %cd% gulp')"><i class="fa fa-tasks"></i></a>
-                    </div>
-                    <small>{{widget.path}}</small>
-                </div>
-            </li>
-            <li class="list-group-item" ng-if="results.length == 0">
-                <strong>No results found...</strong>
-            </li>
-        </ul>
+
+<div class="row" ng-if="!loading">
+    <div class="col-sm-6 col-md-4" ng-repeat="widget in widgets | orderBy:'title' | filter:filterTerm as results track by $index">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <a href="#widget/{{widget.folder}}">{{widget.title|default:'Widget sem nome'}}</a></h3>
+            </div>
+            <div class="panel-body">
+                {{widget.description}}
+            </div>
+            <div class="panel-footer">
+                <a class="btn" href="javascript:void(0)" ng-click="open(widget.path)"><i class="fa fa-file-code-o"></i></a>
+                <a class="btn" href="javascript:void(0)" ng-click="open(widget.path,'explorer %cd%')"><i class="fa fa-folder-open-o"></i></a>
+                <a class="btn" href="javascript:void(0)" ng-click="open(widget.path,terminal_exec)"><i class="fa fa-terminal"></i></a>
+                <a class="btn" href="javascript:void(0)" ng-click="updateXMLonServer(widget)"><i class="fa fa-database"></i></a>
+                <a class="btn" href="javascript:void(0)" ng-if="!!widget.gulpfile" ng-click="open(widget.path,'start /D %cd% gulp')"><i class="fa fa-tasks"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="alert alert-warning" role="alert" ng-if="results.length == 0">
+        <strong>Nenhum widget encontrado</strong>
     </div>
 </div>

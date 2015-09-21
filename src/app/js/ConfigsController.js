@@ -2,20 +2,33 @@ module.exports = function(app) {
 
     app.controller('ConfigsController', function($scope) {
 
-        $scope.path = localStorage.config_path || '';
-        $scope.gulpfile = localStorage.config_gulpfile || '';
-        $scope.editor_exec = localStorage.config_editor_exec || 'atom';
+        var configs = app.db('configs');
+
+        $scope.path = configs.get('path') || '';
+        $scope.gulpfile = configs.get('gulpfile') || '';
+        $scope.editor_exec = configs.get('editor_exec') || 'atom';
+        $scope.terminal_exec = configs.get('terminal_exec') || 'start /D %cd% cmd';
+
+        //"C:\Program Files\ConEmu\ConEmu64.exe" "/here" /dir "%cd%" /cmd {{Shells::cmd}}
 
         $scope.$watch('path',function () {
-            localStorage.config_path = $scope.path;
+            configs.set('path',$scope.path);
         });
 
         $scope.$watch('gulpfile',function () {
-            localStorage.config_gulpfile = $scope.gulpfile;
+            configs.set('gulpfile',$scope.gulpfile);
         });
 
         $scope.$watch('editor_exec',function () {
-            localStorage.config_editor_exec = $scope.editor_exec;
+            configs.set('editor_exec',$scope.editor_exec);
+        });
+
+        $scope.$watch('terminal_exec',function () {
+            configs.set('terminal_exec',$scope.terminal_exec);
+        });
+
+        $scope.$watchGroup(['path','editor_exec','terminal_exec','gulpfile'],function () {
+            app.db.save();
         });
 
         $scope.$on('webkitdirectory.change',function (e, path) {

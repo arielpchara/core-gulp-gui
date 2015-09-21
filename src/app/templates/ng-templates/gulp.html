@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col-sm-6">
+        <small>File: {{gulpfile.name}}</small>
+        <ul>
+            <li ng-repeat="task in gulpfile.tasks">
+                <a href="javascript:void(0)" ng-click="run(task)">{{task}}</a>
+            </li>
+        </ul>
+    </div>
+    <div class="col-sm-6"></div>
+</div>
+
+<button type="button" name="button" ng-click="run()">
+    run</button>
+<code>
+    <pre>
+        <span ng-repeat="log in logs track by $index" ng-bind-html="log"></span>
+    </pre>
+</code>

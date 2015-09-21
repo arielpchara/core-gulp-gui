@@ -1,31 +1,33 @@
 var fs = _require('fs');
 var path = _require('path');
-var xml = _require('xml2js');
+var xml = require('xml2js');
 var child_process = _require('child_process');
 var _ = require('lodash');
 
 module.exports = function(app) {
 
+    require('./WidgetViewController.js')(app);
+
     app.factory('WidgetsDir', function($q) {
         return function(directory, cache) {
-            cache = cache || false;
             var deferred = $q.defer();
-            var cacheFilename = './cache/widgets.json';
+            if ( !cache && app.db('widgets').size() > 0 ) {
+                try {
+                    deferred.resolve( app.db('widgets').toJSON() );
+                    return deferred.promise;
+                } catch (e) {}
+            }
 
-            // if (cache) {
-            //     try {
-            //         fs.readFile(cacheFilename, function(err, file) {
-            //             deferred.resolve(file);
-            //         });
-            //         return deferred.promise;
-            //     } catch (e) {}
-            // }
+            // Reset nos widgets do cache
+            app.db.object.widgets = [];
+            app.db.save();
 
             try {
                 var parser = new xml.Parser();
                 var files = fs.readdirSync(directory);
                 var getManifest = [];
-                files.forEach(function(name) {
+                var widgets = app.db('widgets');
+                files.forEach(function(name, i) {
                     var manifest = path.join(directory, name, 'manifest.xml');
                     try {
                         if (fs.statSync(manifest).isFile()) {
@@ -37,17 +39,23 @@ module.exports = function(app) {
                                         var widgetProps = angular.extend(parsed.package.widgets[0].widget[0].$,{
                                             'path': path.join(directory, name),
                                             'plain': plain,
-                                            'gulpfile': false
+                                            'gulpfile': false,
+                                            'package':{}
                                         });
                                         try {
-                                            var gulpfile = path.join(directory, name, 'gulpfile.js');
-                                            if( fs.statSync(gulpfile).isFile() ){
-                                                widgetProps.gulpfile = gulpfile;
-                                            }
-                                        } catch (e) {}
+                                            widgetProps.gulpfile = fs.statSync( path.join(directory, name, 'gulpfile.js') ).isFile();
+                                        } catch (e) {
+                                            // console.error('gulpfile',e);
+                                        }
+                                        try {
+                                            widgetProps.package = _require( path.join(directory, name, 'package.json') );
+                                        } catch (e) {
+                                            // console.error('package',e);
+                                        }
+                                        widgets.push(widgetProps);
                                         parseXmlDeferred.resolve( widgetProps );
                                     } catch (e) {
-                                        console.error('parametro inconsistente ' + name + '.\n', e);
+                                        // console.error('parametro inconsistente no manifest.xml' + name + '.', e);
                                         parseXmlDeferred.resolve(null);
                                     }
                                 });
@@ -55,13 +63,18 @@ module.exports = function(app) {
                             getManifest.push(parseXmlDeferred.promise);
                         }
                     } catch (err) {
-                        console.error('não foi possivel ler o manifesto do ' + name + '.\n', err);
+                        // console.error('não foi possivel ler o manifesto do ' + name + '.\n', err);
                     }
                 });
                 $q.all(getManifest)
+                    .catch(function (err) {
+                        console.error(err);
+                    })
                     .then(function(manifest) {
-                        deferred.resolve(manifest);
-                        // fs.writeFile(cacheFilename, manifest);
+                        deferred.resolve(manifest.filter(function (w) {
+                            return typeof w === 'object' && w !== null;
+                        }));
+                        app.db.save();
                     });
             } catch (err) {
                 console.error('não foi possivel ler o diretório\n', err);
@@ -70,13 +83,22 @@ module.exports = function(app) {
         };
     });
 
-    app.controller('WidgetsController', ['$scope', 'WidgetsDir', '$q', function($scope, WidgetsDir, $q) {
+    app.controller('WidgetsController', function($scope, $rootScope, WidgetsDir, $q, updateXMLonServer) {
 
+        var configs = app.db('configs');
+
+        $scope.term = '';
+        $scope.regex = '';
         $scope.widgets = [];
+        $scope.loading = false;
 
-        $scope.refresh = function() {
-            WidgetsDir(localStorage.config_path).then(function(resp) {
+        $scope.terminal_exec = configs.get('terminal_exec');
+
+        $scope.refresh = function(cache) {
+            $scope.loading = true;
+            WidgetsDir(configs.get('path'),cache).then(function(resp) {
                 $scope.widgets = resp;
+                $scope.loading = false;
             });
         };
 
@@ -85,22 +107,41 @@ module.exports = function(app) {
                 if ( cmd !== undefined ) {
                     reject(null);
                 }else{
-                    child_process.execFile(localStorage.config_editor_exec,[path],{cwd:path},function (err) {
+                    child_process.execFile(configs.get('editor_exec'),[path],{cwd:path},function (err) {
                         if (err) {
                             reject(err);
                         }
                     });
                 }
             }).catch(function (err) {
-                cmd = cmd || localStorage.config_editor_exec+" %cd%" || 'start /D %cd% cmd';
+                cmd = cmd || configs.get('editor_exec') || 'start /D %cd% cmd';
                 // cmd = [cmd,path].join(' ');
                 child_process.exec(cmd,{cwd:path},function (err) {
                     console.error(err);
                 });
             });
         };
+
+        $scope.updateXMLonServer = function (widget) {
+            updateXMLonServer(widget);
+        };
+
+        $scope.filterTerm = function (widget) {
+            if(!widget )
+                return false;
+            if( $scope.term.length === 0 )
+                return true;
+
+            var terms = $scope.term.split(' ');
+            $scope.regex = _(terms).map(function (t) {
+                return "(?=.*"+t+")";
+            }).join('') + '.+';
+            var regex = new RegExp( $scope.regex ,'gi');
+            return regex.test(widget.plain);
+        };
         $scope.refresh();
-    }]);
+
+    });
 
     app.config(function($routeProvider, $locationProvider) {
         $routeProvider

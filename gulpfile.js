@@ -1,4 +1,3 @@
-
 var NwBuilder = require('nw-builder');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -27,12 +26,18 @@ var frontMatter = require('gulp-front-matter');
 var browserSync = require('browser-sync').create();
 
 
-gulp.task('nw', ["default"], function() {
+gulp.task('stop',function (cb) {
+    var kill = exec('taskkill /f /im widget_builder.exe',function () {
+        cb();
+    });
+});
+
+gulp.task('build', ['stop',"default"], function(cb) {
     var nw = new NwBuilder({
         files: './app/**/**',
-        platforms: ['win64','osx64'],
+        platforms: ['win64'],
         version: '0.12.3',
-        //winIco: './app/icon.ico'
+        winIco: './app/icon.ico'
     });
     // Log stuff you want
     nw.on('log', function(msg) {
@@ -40,10 +45,19 @@ gulp.task('nw', ["default"], function() {
     });
 
     // Build returns a promise, return it so the task isn't called in parallel
-    return nw.build().then(function () {
-        
-    }).catch(function(err) {
-        gutil.log('nw-builder', err);
+    nw.build()
+        .then(function () {
+            cb();
+            gutil.log('then');
+        })
+        .catch(function(err) {
+            gutil.log('nw-builder', err);
+        });
+});
+
+gulp.task('run',['build'], function (cb) {
+    return require('child_process').execFile(path.join( process.cwd() ,'build','widget_builder','win64','widget_builder.exe' ), {}).on('close',function (err,stdout) {
+        gutil.log( stdout );
     });
 });
 
@@ -65,7 +79,7 @@ gulp.task("js", function() {
         entries: './src/app/js/main.js',
         debug: true,
         transform: [nwjsify]
-      });
+    });
 
     return b.bundle()
         .pipe(source('bundle.js'))
@@ -82,26 +96,26 @@ gulp.task("js", function() {
 });
 
 var nunjucksOpts = {
-  searchPaths: ['src/app/templates'],
-  tags: {
-    variableStart: '{{{',
-    variableEnd: '}}}'
-  }
+    searchPaths: ['src/app/templates'],
+    tags: {
+        variableStart: '{{{',
+        variableEnd: '}}}'
+    }
 };
 
 gulp.task('nunjucks', function() {
-  return gulp.src('src/app/templates/*.html')
-    .on('error', gutil.log)
-    .pipe(data(function(file) {
-      return {
-          ngTemplates:fs.readdirSync('src/app/templates/ng-templates').map(function (filename) {
-              return filename; // path.join('ng-templates',filename);
-          })
-      };
-    }))
-    .pipe(frontMatter())
-    .pipe(nunjucks(nunjucksOpts).on('error', gutil.log))
-    .pipe(gulp.dest('./app'));
+    return gulp.src('src/app/templates/*.html')
+        .on('error', gutil.log)
+        .pipe(data(function(file) {
+            return {
+                ngTemplates: fs.readdirSync('src/app/templates/ng-templates').map(function(filename) {
+                    return filename; // path.join('ng-templates',filename);
+                })
+            };
+        }))
+        .pipe(frontMatter())
+        .pipe(nunjucks(nunjucksOpts).on('error', gutil.log))
+        .pipe(gulp.dest('./app'));
 });
 
 

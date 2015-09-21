@@ -1,7 +1,20 @@
 var angular = require("angular");
-var ngRoute = require("angular-route");
 
-var app = angular.module('app',['ngRoute']);
+require("angular-route");
+require("angular-sanitize");
+
+var ngFilters = require("./filters.js");
+
+var manifestXml = require('./components/manifest.xml.js');
+
+var app = angular.module('app', ['ngRoute', 'ngSanitize', ngFilters, manifestXml]);
+
+// configs
+app.config(function($compileProvider) {
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(app):/);
+});
+
+app.db = require('./db.js');
 
 require("./GulpController.js")(app);
 
